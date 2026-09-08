@@ -4,16 +4,19 @@ class Solicitud:
         self.receptorID=receptorID
         self.estado="Pendiente"
 
-    def aceptar(self):
-        if self.estado=="Pendiente":
+    def puedeResponder(self,usuarioID):
+        return usuarioID==self.receptorID and self.estado=="Pendiente"
+
+    def aceptar(self,usuarioID):
+        if self.puedeResponder(usuarioID):
             self.estado="Aceptada"
 
-    def rechazar(self):
-        if self.estado=="Pendiente":
+    def rechazar(self,usuarioID):
+        if self.puedeResponder(usuarioID):
             self.estado="Rechazada"
 
 solicitud=Solicitud(1,2)
+solicitud.aceptar(1)
 print(solicitud.estado)
-solicitud.aceptar()
-solicitud.rechazar()
+solicitud.rechazar(2)
 print(solicitud.estado)
