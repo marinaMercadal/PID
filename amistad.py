@@ -15,8 +15,21 @@ class Solicitud:
         if self.puedeResponder(usuarioID):
             self.estado="Rechazada"
 
-solicitud=Solicitud(1,2)
-solicitud.aceptar(1)
+
+class GestorAmistades:
+    def __init__(self):
+        self.solicitudes=[]
+
+    def enviarSolicitud(self,emisorID,receptorID):
+            solicitud=Solicitud(emisorID,receptorID)
+            self.solicitudes.append(solicitud)
+            return solicitud
+
+
+gestor=GestorAmistades()
+solicitud=gestor.enviarSolicitud(1,2)
 print(solicitud.estado)
-solicitud.rechazar(2)
+print(len(gestor.solicitudes))
+solicitud.aceptar(2)
 print(solicitud.estado)
+print(len(gestor.solicitudes))
