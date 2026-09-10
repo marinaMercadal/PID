@@ -30,7 +30,16 @@ class GestorAmistades:
     def puedeEnviar(self,emisorID,receptorID):
         sonDistintos= emisorID!=receptorID
         hayPendiente=self.haySolicitudPendiente(emisorID,receptorID)
-        return sonDistintos and not hayPendiente
+        yaSonAmigos = self.sonAmigos(emisorID,receptorID)
+        return sonDistintos and not hayPendiente and not yaSonAmigos
+    
+    def sonAmigos(self,primerID,segundoID):
+        for solicitud in self.solicitudes:
+            esEntreUsuarios=solicitud.esEntre(primerID,segundoID)
+            estaAceptada=(solicitud.estado=="Aceptada")
+            if esEntreUsuarios and estaAceptada:
+                return True
+        return False
     
     def enviarSolicitud(self,emisorID,receptorID):
         if self.puedeEnviar(emisorID,receptorID):
@@ -46,10 +55,14 @@ class GestorAmistades:
                 return True
         return False
 
+    
 
-sol= Solicitud(1,2)
-gestor=GestorAmistades()
-gestor.enviarSolicitud(1,2)
-gestor.enviarSolicitud(1,2)
-gestor.enviarSolicitud(2,1)
-print(len(gestor.solicitudes))
+
+gestor = GestorAmistades()
+solicitud = gestor.enviarSolicitud(1, 2)
+solicitud.aceptar(2)
+
+print(gestor.sonAmigos(1, 2))  
+print(gestor.sonAmigos(2, 1))  
+gestor.enviarSolicitud(2, 1)
+print(len(gestor.solicitudes))  
