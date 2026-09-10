@@ -15,13 +15,22 @@ class Solicitud:
         if self.puedeResponder(usuarioID):
             self.estado="Rechazada"
 
+    
+    def esEntre(self,primerID,segundoID):
+        mismoSentido=self.emisorID==primerID and self.receptorID==segundoID
+        sentidoInverso=self.emisorID==segundoID and self.receptorID==primerID
+
+        return mismoSentido or sentidoInverso
+
 
 class GestorAmistades:
     def __init__(self):
         self.solicitudes=[]
 
     def puedeEnviar(self,emisorID,receptorID):
-            return emisorID!=receptorID
+        sonDistintos= emisorID!=receptorID
+        hayPendiente=self.haySolicitudPendiente(emisorID,receptorID)
+        return sonDistintos and not hayPendiente
     
     def enviarSolicitud(self,emisorID,receptorID):
         if self.puedeEnviar(emisorID,receptorID):
@@ -29,7 +38,18 @@ class GestorAmistades:
             self.solicitudes.append(solicitud)
             return solicitud
 
+    def haySolicitudPendiente(self,emisorID,receptorID):
+        for solicitud in self.solicitudes:
+            esEntreUsuarios=solicitud.esEntre(emisorID,receptorID)
+            estaPendiente=(solicitud.estado=="Pendiente")
+            if esEntreUsuarios and estaPendiente:
+                return True
+        return False
 
+
+sol= Solicitud(1,2)
 gestor=GestorAmistades()
-solicitud=gestor.enviarSolicitud(1,1)
+gestor.enviarSolicitud(1,2)
+gestor.enviarSolicitud(1,2)
+gestor.enviarSolicitud(2,1)
 print(len(gestor.solicitudes))
