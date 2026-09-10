@@ -55,14 +55,12 @@ class GestorAmistades:
                 return True
         return False
 
-    
+    def solicitudesRecibidas(self,usuarioID):
+        recibidas = []
+        for solicitud in self.solicitudes:
+            esReceptor= (solicitud.receptorID==usuarioID)
+            estaPendiente= (solicitud.estado=="Pendiente")
+            if esReceptor and estaPendiente:
+                recibidas.append(solicitud)
+        return recibidas
 
-
-gestor = GestorAmistades()
-solicitud = gestor.enviarSolicitud(1, 2)
-solicitud.aceptar(2)
-
-print(gestor.sonAmigos(1, 2))  
-print(gestor.sonAmigos(2, 1))  
-gestor.enviarSolicitud(2, 1)
-print(len(gestor.solicitudes))  
