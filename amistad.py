@@ -20,16 +20,16 @@ class GestorAmistades:
     def __init__(self):
         self.solicitudes=[]
 
+    def puedeEnviar(self,emisorID,receptorID):
+            return emisorID!=receptorID
+    
     def enviarSolicitud(self,emisorID,receptorID):
+        if self.puedeEnviar(emisorID,receptorID):
             solicitud=Solicitud(emisorID,receptorID)
             self.solicitudes.append(solicitud)
             return solicitud
 
 
 gestor=GestorAmistades()
-solicitud=gestor.enviarSolicitud(1,2)
-print(solicitud.estado)
-print(len(gestor.solicitudes))
-solicitud.aceptar(2)
-print(solicitud.estado)
+solicitud=gestor.enviarSolicitud(1,1)
 print(len(gestor.solicitudes))
