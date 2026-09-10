@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+ca.pem
+base_datos/credenciales.py
+
 # Distribution / packaging
 .Python
 build/
