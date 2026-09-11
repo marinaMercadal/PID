@@ -43,3 +43,11 @@ def actualizarEstado(solicitudID,usuarioID,nuevoEstado):
         sesion.commit()
 
         return resultado.rowcount==1
+    
+def obtenerRecibidas(usuarioID):
+    with Session() as sesion:
+        consulta=select(SolicitudTabla).where(
+            SolicitudTabla.receptorID==usuarioID,
+            SolicitudTabla.estado=="Pendiente"
+        )
+        return sesion.scalars(consulta).all()

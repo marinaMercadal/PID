@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amistades - JuntApp</title>
+    <title>Amistades JuntApp</title>
 </head>
 <body>
     <h1>Mis amistades</h1>
@@ -18,13 +18,40 @@
     <h3>Resultados</h3>
     <ul>
         {% for persona in personas %}
-            <li>{{ persona.nombre }}</li>
+            <li>
+    {{ persona.nombre }}
+
+    {% if persona.id != session["usuarioID"] %}
+        <form method="POST"
+              action="{{ url_for('enviar_solicitud', receptorID=persona.id) }}">
+            <button type="submit">Enviar solicitud</button>
+        </form>
+    {% endif %}
+</li>
         {% else %}
-            <li>No se encontraron personas.</li>
+            <li>No se encontraron personas</li>
         {% endfor %}
     </ul>
 {% endif %}
     <h2>Solicitudes recibidas</h2>
-    <p>Todavía no conectamos esta sección con las solicitudes.</p>
+    <ul>
+        {% for solicitud in recibidas %}
+            <li>
+                Solicitud del usuario {{ solicitud.emisorID }}
+
+                <form method="POST"
+                      action="{{ url_for('aceptar_solicitud', solicitudID=solicitud.id) }}">
+                    <button type="submit">Aceptar</button>
+                </form>
+
+                <form method="POST"
+                      action="{{ url_for('rechazar_solicitud', solicitudID=solicitud.id) }}">
+                    <button type="submit">Rechazar</button>
+                </form>
+            </li>
+        {% else %}
+            <li>No tenes solicitudes pendientes</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
