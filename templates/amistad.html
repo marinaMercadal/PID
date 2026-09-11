@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amistades - JuntApp</title>
+</head>
+<body>
+    <h1>Mis amistades</h1>
+
+    <h2>Buscar personas</h2>
+    <form method="GET" action="/amistad">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" type="search">
+        <button type="submit">Buscar</button>
+    </form>
+    {% if nombre %}
+    <h3>Resultados</h3>
+    <ul>
+        {% for persona in personas %}
+            <li>{{ persona.nombre }}</li>
+        {% else %}
+            <li>No se encontraron personas.</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+    <h2>Solicitudes recibidas</h2>
+    <p>Todavía no conectamos esta sección con las solicitudes.</p>
+</body>
+</html>

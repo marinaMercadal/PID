@@ -1,6 +1,7 @@
 from flask import Flask, request , render_template
 from dominio.usuario import Usuario
 from base_datos.usuario_acciones import guardar
+from base_datos.usuario_acciones import buscarPorNombre
 
 app= Flask(__name__)
 
@@ -23,6 +24,16 @@ def registro():
 def mostrar_registro():
     return render_template("registro.html")
 
+@app.route("/amistad",methods=["GET"])
+def mostrar_amistad():
+    nombre=request.args.get("nombre","")
+    personas=buscarPorNombre(nombre)
+
+    return render_template(
+        "amistad.html",
+        personas=personas,
+        nombre=nombre
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
