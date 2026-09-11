@@ -1,30 +1,34 @@
-
 import bcrypt
+
+
 class Usuario:
     def __init__(self, email, password, nombre):
-
         self.validar_email(email)
         self.validar_password(password)
         self.validar_nombre(nombre)
 
-        self.email=email
+        self.email = email.strip().lower()
         self.password = self.hashear_password(password)
         self.nombre = nombre
 
-    def validar_email(self,email):
+    def validar_email(self, email):
         if not email:
             raise ValueError("El email no puede estar vacío")
-        if "@" not in email:
+        if any(caracter.isspace() for caracter in email):
+            raise ValueError("El email no puede contener espacios")
+        if email.count("@") != 1:
             raise ValueError("El correo debe contener un @")
         usuario, arroba, dominio = email.partition("@")
         if not usuario or not dominio:
-            raise ValueError("El email no es válido")
+            raise ValueError("El email no es valido")
         if "." not in dominio:
-            raise ValueError("El email debe tener un dominio válido como '.com' ")
+            raise ValueError("El email debe tener un dominio valido como '.com' ")
 
-    def validar_password(self,password):
-        if not password or len(password)<8:
+    def validar_password(self, password):
+        if not password or len(password) < 8:
             raise ValueError("La contraseña debe tener al menos 8 caracteres")
+        if len(password.encode("utf-8")) > 72:
+            raise ValueError("La contraseña no puede tener más de 72 caracteres")
         if not self.contiene_mayuscula(password):
             raise ValueError("La contraseña debe tener al menos una mayúscula")
         if not self.contiene_simbolo(password):
@@ -42,12 +46,19 @@ class Usuario:
                 return True
         return False
 
-    def validar_nombre(self,nombre):
-        if not nombre: 
+    def validar_nombre(self, nombre):
+        if not nombre or not nombre.strip():
             raise ValueError("El nombre no debe estar vacio")
-        
 
-    def hashear_password(self,password):
+    def hashear_password(self, password):
         password_en_bytes = password.encode("utf-8")
-        hash_bytes=bcrypt.hashpw(password_en_bytes,bcrypt.gensalt())
+        hash_bytes = bcrypt.hashpw(password_en_bytes, bcrypt.gensalt())
         return hash_bytes.decode("utf-8")
+
+    
+    @staticmethod
+    def verificar_password(password_plana, password_hasheada):
+        return bcrypt.checkpw(
+            password_plana.encode("utf-8"),
+            password_hasheada.encode("utf-8"),
+        )
