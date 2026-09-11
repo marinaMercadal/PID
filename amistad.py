@@ -24,8 +24,14 @@ class Solicitud:
 
 
 class GestorAmistades:
-    def __init__(self):
+    def __init__(self,solicitudes=None):
         self.solicitudes=[]
+
+        if solicitudes is not None:
+            for fila in solicitudes:
+                solicitud=Solicitud(fila.emisorID,fila.receptorID)
+                solicitud.estado=fila.estado
+                self.solicitudes.append(solicitud)
 
     def puedeEnviar(self,emisorID,receptorID):
         sonDistintos= emisorID!=receptorID
