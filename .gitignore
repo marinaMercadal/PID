@@ -220,3 +220,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+#Base de datos
+ca.pem
+base_datos/credenciales.py
