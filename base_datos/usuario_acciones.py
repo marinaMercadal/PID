@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from base_datos.configuracion import Session
 from base_datos.usuario_tabla import UsuarioTabla
-from dominio.usuario import Usuario
+from app.dominio.usuario import Usuario
 
 def guardar(usuario):
     if buscar_por_email(usuario.email) is not None:
