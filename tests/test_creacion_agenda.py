@@ -1,4 +1,4 @@
-from app.agenda import Agenda
+from app.agenda.agenda import Agenda
 import pytest
 
 
@@ -32,10 +32,10 @@ def test_formato_horario_invalido():
 def test_titulo_vacio_es_invalido():
     with pytest.raises(ValueError) as error:
         Agenda("Martina", "15/09/2026", "", "18:00", "21:00")
-    assert str(error.value) == "El campo titulo de la reunion no puede estar vacío"
+    assert str(error.value) == "El campo titulo no puede estar vacío"
 
 
 def test_usuario_vacio_es_invalido():
     with pytest.raises(ValueError) as error:
         Agenda("", "15/09/2026", "Juntada", "18:00", "21:00")
-    assert str(error.value) == "El campo usuario no puede estar vacío"
+    assert str(error.value) == "El campo responsable no puede estar vacío"
