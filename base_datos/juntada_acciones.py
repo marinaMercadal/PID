@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from base_datos.configuracion import Session
 from base_datos.juntada_tabla import JuntadaTabla
 from base_datos.juntada_invitados_tabla import JuntadaInvitadosTabla
@@ -25,7 +25,8 @@ def guardar(juntada):
             sesion.add(invitado)
 
         sesion.commit()  
-
+        
+        return juntada_tabla.id
 
 def obtener_invitaciones_de_usuario(usuario_id):
     with Session() as sesion:
@@ -33,3 +34,23 @@ def obtener_invitaciones_de_usuario(usuario_id):
             JuntadaInvitadosTabla.usuario_id == usuario_id
         )
         return sesion.scalars(consulta).all()
+    
+def responder_invitacion(juntada_id, usuario_id, nueva_respuesta):
+    if nueva_respuesta not in ("Si", "No", "Tal vez"):
+        return False
+
+    with Session() as sesion:
+        consulta = (
+            update(JuntadaInvitadosTabla)
+            .where(
+                (JuntadaInvitadosTabla.juntada_id == juntada_id) &
+                (JuntadaInvitadosTabla.usuario_id == usuario_id) &
+                (JuntadaInvitadosTabla.estado.in_(["Tal vez","Pendiente"]))
+            )
+            .values(estado=nueva_respuesta)
+        )
+
+        resultado = sesion.execute(consulta)
+        sesion.commit()
+
+        return resultado.rowcount == 1
