@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JuntApp — Calendario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='registro.css') }}">
+</head>
+<body>
+
+<div class="pagina">
+  <div class="marca">JuntApp</div>
+
+  <div class="tarjeta-formulario tarjeta-calendario">
+    <div class="encabezado-tarjeta">
+      <h2>Mi calendario</h2>
+      <div class="encabezado-acciones">
+        <a href="{{ url_for('mostrar_nueva_juntada', fecha=fecha_seleccionada.isoformat()) }}" class="boton-secundario">Nueva juntada</a>
+        <a href="{{ url_for('mostrar_amistad') }}" class="boton-texto">Amistades</a>
+        <form method="POST" action="{{ url_for('logout') }}">
+          <button type="submit" class="boton-texto">Cerrar sesión</button>
+        </form>
+      </div>
+    </div>
+
+    <div data-recargable>
+      <div class="seccion">
+        <h3 class="titulo-seccion">Invitaciones pendientes</h3>
+        <ul class="lista">
+          {% for invitacion in invitaciones_pendientes %}
+          <li class="fila">
+            <div class="fila-info">
+              <span class="fila-nombre">{{ invitacion.titulo }}</span>
+              <span class="fila-detalle">{{ invitacion.fecha.strftime('%d/%m/%Y') }} · {{ invitacion.hora_inicio.strftime('%H:%M') }} a {{ invitacion.hora_fin.strftime('%H:%M') }}</span>
+            </div>
+            <div class="fila-acciones">
+              <form method="POST" action="{{ url_for('responder_juntada', juntada_id=invitacion.juntada_id) }}">
+                <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
+                <input type="hidden" name="respuesta" value="Si">
+                <button type="submit" class="boton-secundario">Aceptar</button>
+              </form>
+              <form method="POST" action="{{ url_for('responder_juntada', juntada_id=invitacion.juntada_id) }}">
+                <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
+                <input type="hidden" name="respuesta" value="Tal vez">
+                <button type="submit" class="boton-texto">Tal vez</button>
+              </form>
+              <form method="POST" action="{{ url_for('responder_juntada', juntada_id=invitacion.juntada_id) }}">
+                <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
+                <input type="hidden" name="respuesta" value="No">
+                <button type="submit" class="boton-texto">Rechazar</button>
+              </form>
+            </div>
+          </li>
+          {% else %}
+          <li class="fila fila-vacia">No tenés invitaciones pendientes</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="calendario-layout">
+        <div class="calendario-eventos">
+          <div class="seccion-encabezado">
+            <h3 class="titulo-seccion">{{ fecha_seleccionada.strftime('%d/%m/%Y') }}</h3>
+            {% if fecha_seleccionada != hoy %}
+            <a href="{{ url_for('mostrar_calendario') }}" class="boton-secundario">Hoy</a>
+            {% endif %}
+          </div>
+          <ul class="lista">
+            {% for evento in eventos %}
+            <li class="fila">
+              <div class="fila-info">
+                <span class="fila-nombre">{{ evento.titulo }}</span>
+                <span class="fila-detalle">{{ evento.hora_inicio.strftime('%H:%M') }} a {{ evento.hora_fin.strftime('%H:%M') }} · {{ evento.detalle }}</span>
+              </div>
+              {% if evento.puede_responder %}
+              <div class="fila-acciones">
+                <form method="POST" action="{{ url_for('responder_juntada', juntada_id=evento.juntada_id) }}">
+                  <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
+                  <input type="hidden" name="respuesta" value="Si">
+                  <button type="submit" class="boton-secundario">Aceptar</button>
+                </form>
+                <form method="POST" action="{{ url_for('responder_juntada', juntada_id=evento.juntada_id) }}">
+                  <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
+                  <input type="hidden" name="respuesta" value="Tal vez">
+                  <button type="submit" class="boton-texto">Tal vez</button>
+                </form>
+                <form method="POST" action="{{ url_for('responder_juntada', juntada_id=evento.juntada_id) }}">
+                  <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
+                  <input type="hidden" name="respuesta" value="No">
+                  <button type="submit" class="boton-texto">Rechazar</button>
+                </form>
+              </div>
+              {% endif %}
+            </li>
+            {% else %}
+            <li class="fila fila-vacia">No tenés eventos este día</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="calendario-mini">
+          <div class="mini-calendario-header">
+            <a href="{{ url_for('mostrar_calendario', fecha=mes_anterior.isoformat()) }}" class="boton-texto">‹</a>
+            <span class="mini-calendario-titulo">{{ nombre_mes }} {{ fecha_seleccionada.year }}</span>
+            <a href="{{ url_for('mostrar_calendario', fecha=mes_siguiente.isoformat()) }}" class="boton-texto">›</a>
+          </div>
+          <div class="mini-calendario-dias-semana">
+            {% for dia_semana in dias_semana %}
+            <span>{{ dia_semana }}</span>
+            {% endfor %}
+          </div>
+          <div class="mini-calendario-grilla">
+            {% for semana in semanas %}
+            {% for dia in semana %}
+            <a href="{{ url_for('mostrar_calendario', fecha=dia.isoformat()) }}"
+               class="mini-calendario-dia{% if dia.month != fecha_seleccionada.month %} mini-calendario-dia-otro-mes{% endif %}{% if dia == hoy %} mini-calendario-dia-hoy{% endif %}{% if dia == fecha_seleccionada %} mini-calendario-dia-seleccionado{% endif %}">
+              {{ dia.day }}
+            </a>
+            {% endfor %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='navegacion.js') }}" defer></script>
+</body>
+</html>

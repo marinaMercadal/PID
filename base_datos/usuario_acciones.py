@@ -27,6 +27,15 @@ def buscarPorNombre(nombre):
         )
         return sesion.scalars(consulta).all()
 
+def obtenerTodos():
+    with Session() as sesion:
+        consulta=select(UsuarioTabla).order_by(UsuarioTabla.nombre)
+        return sesion.scalars(consulta).all()
+
+def buscarPorID(usuarioID):
+    with Session() as sesion:
+        return sesion.get(UsuarioTabla, usuarioID)
+
 def buscar_por_email(email):
     sesion = Session()
     usuario_tabla = sesion.query(UsuarioTabla).filter_by(email=email).first()

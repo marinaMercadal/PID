@@ -51,3 +51,16 @@ def obtenerRecibidas(usuarioID):
             SolicitudTabla.estado=="Pendiente"
         )
         return sesion.scalars(consulta).all()
+
+def obtener_amigos_de_usuario(usuarioID):
+    with Session() as sesion:
+        consulta=select(SolicitudTabla).where(
+            SolicitudTabla.estado=="Aceptada",
+            (SolicitudTabla.emisorID==usuarioID) | (SolicitudTabla.receptorID==usuarioID)
+        )
+        solicitudes=sesion.scalars(consulta).all()
+
+    return [
+        solicitud.receptorID if solicitud.emisorID==usuarioID else solicitud.emisorID
+        for solicitud in solicitudes
+    ]
