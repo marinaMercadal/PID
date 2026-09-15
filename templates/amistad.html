@@ -18,6 +18,7 @@
       <h2>Mis amistades</h2>
       <div class="encabezado-acciones">
         <a href="{{ url_for('mostrar_calendario') }}" class="boton-texto">Calendario</a>
+        <a href="{{ url_for('mostrar_perfil') }}" class="boton-texto">Mi perfil</a>
         <form method="POST" action="{{ url_for('logout') }}">
           <button type="submit" class="boton-texto">Cerrar sesión</button>
         </form>
@@ -53,7 +54,9 @@
               <span class="fila-nombre">{{ persona.nombre }}</span>
               <span class="fila-detalle">{{ persona.email }}</span>
             </div>
-            {% if persona.id != session["usuarioID"] %}
+            {% if persona.id in amigos_ids %}
+            <a href="{{ url_for('mostrar_nueva_juntada', invitado=persona.id) }}" class="boton-secundario">Crear juntada</a>
+            {% elif persona.id != session["usuarioID"] %}
             <form method="POST" action="{{ url_for('enviar_solicitud', receptorID=persona.id) }}">
               <button type="submit" class="boton-secundario">Enviar solicitud</button>
             </form>
@@ -86,6 +89,22 @@
           </li>
           {% else %}
           <li class="fila fila-vacia">No tenés solicitudes pendientes</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="seccion">
+        <h3 class="titulo-seccion">Mis amigos</h3>
+        <ul class="lista">
+          {% for amigo in amigos %}
+          <li class="fila">
+            <div class="fila-info">
+              <span class="fila-nombre">{{ amigo.nombre }}</span>
+              <span class="fila-detalle">{{ amigo.email }}</span>
+            </div>
+            <a href="{{ url_for('mostrar_nueva_juntada', invitado=amigo.id) }}" class="boton-secundario">Crear juntada</a>
+          </li>
+          {% else %}
+          <li class="fila fila-vacia">Todavía no tenés amigos agregados</li>
           {% endfor %}
         </ul>
       </div>

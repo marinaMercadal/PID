@@ -17,15 +17,23 @@
     <div class="encabezado-tarjeta">
       <h2>Mi calendario</h2>
       <div class="encabezado-acciones">
-        <a href="{{ url_for('mostrar_nueva_juntada', fecha=fecha_seleccionada.isoformat()) }}" class="boton-secundario">Nueva juntada</a>
+        <a href="{{ url_for('mostrar_nueva_agenda', fecha=fecha_seleccionada.isoformat()) }}" class="boton-secundario">Nuevo evento</a>
+        <a href="{{ url_for('mostrar_nueva_juntada', fecha=fecha_seleccionada.isoformat()) }}" data-nueva-juntada class="boton-secundario">Nueva juntada</a>
         <a href="{{ url_for('mostrar_amistad') }}" class="boton-texto">Amistades</a>
+        <a href="{{ url_for('mostrar_perfil') }}" class="boton-texto">Mi perfil</a>
         <form method="POST" action="{{ url_for('logout') }}">
           <button type="submit" class="boton-texto">Cerrar sesión</button>
         </form>
       </div>
     </div>
 
-    <div data-recargable>
+    <div data-recargable data-calendario-fecha="{{ fecha_seleccionada.isoformat() }}">
+      {% for dia_eventos in dias_mes %}
+      <template data-eventos-fecha="{{ dia_eventos.isoformat() }}">
+        {% set eventos=eventos_por_dia[dia_eventos] %}
+        {% include "calendario_eventos.html" %}
+      </template>
+      {% endfor %}
       <div class="seccion">
         <h3 class="titulo-seccion">Invitaciones pendientes</h3>
         <ul class="lista">
@@ -61,43 +69,8 @@
 
       <div class="calendario-layout">
         <div class="calendario-eventos">
-          <div class="seccion-encabezado">
-            <h3 class="titulo-seccion">{{ fecha_seleccionada.strftime('%d/%m/%Y') }}</h3>
-            {% if fecha_seleccionada != hoy %}
-            <a href="{{ url_for('mostrar_calendario') }}" class="boton-secundario">Hoy</a>
-            {% endif %}
-          </div>
-          <ul class="lista">
-            {% for evento in eventos %}
-            <li class="fila">
-              <div class="fila-info">
-                <span class="fila-nombre">{{ evento.titulo }}</span>
-                <span class="fila-detalle">{{ evento.hora_inicio.strftime('%H:%M') }} a {{ evento.hora_fin.strftime('%H:%M') }} · {{ evento.detalle }}</span>
-              </div>
-              {% if evento.puede_responder %}
-              <div class="fila-acciones">
-                <form method="POST" action="{{ url_for('responder_juntada', juntada_id=evento.juntada_id) }}">
-                  <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
-                  <input type="hidden" name="respuesta" value="Si">
-                  <button type="submit" class="boton-secundario">Aceptar</button>
-                </form>
-                <form method="POST" action="{{ url_for('responder_juntada', juntada_id=evento.juntada_id) }}">
-                  <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
-                  <input type="hidden" name="respuesta" value="Tal vez">
-                  <button type="submit" class="boton-texto">Tal vez</button>
-                </form>
-                <form method="POST" action="{{ url_for('responder_juntada', juntada_id=evento.juntada_id) }}">
-                  <input type="hidden" name="fecha" value="{{ fecha_seleccionada.isoformat() }}">
-                  <input type="hidden" name="respuesta" value="No">
-                  <button type="submit" class="boton-texto">Rechazar</button>
-                </form>
-              </div>
-              {% endif %}
-            </li>
-            {% else %}
-            <li class="fila fila-vacia">No tenés eventos este día</li>
-            {% endfor %}
-          </ul>
+          {% set dia_eventos=fecha_seleccionada %}
+          {% include 'calendario_eventos.html' %}
         </div>
 
         <div class="calendario-mini">

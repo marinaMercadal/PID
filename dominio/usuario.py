@@ -11,7 +11,8 @@ class Usuario:
         self.password = self.hashear_password(password)
         self.nombre = nombre
 
-    def validar_email(self, email):
+    @staticmethod
+    def validar_email(email):
         if not email:
             raise ValueError("El email no puede estar vacío")
         if any(caracter.isspace() for caracter in email):
@@ -46,7 +47,8 @@ class Usuario:
                 return True
         return False
 
-    def validar_nombre(self, nombre):
+    @staticmethod
+    def validar_nombre(nombre):
         if not nombre or not nombre.strip():
             raise ValueError("El nombre no debe estar vacio")
 

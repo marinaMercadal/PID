@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JuntApp — Nueva juntada</title>
+<title>JuntApp — Nuevo evento</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='registro.css') }}">
@@ -15,7 +15,7 @@
 
   <div class="tarjeta-formulario tarjeta-ancha">
     <div class="encabezado-tarjeta">
-      <h2>Nueva juntada</h2>
+      <h2>Nuevo evento</h2>
       <div class="encabezado-acciones">
         <a href="{{ url_for('mostrar_calendario') }}" class="boton-texto">Cancelar</a>
       </div>
@@ -25,10 +25,10 @@
     <p class="mensaje-error">{{ error }}</p>
     {% endif %}
 
-    <form method="POST" action="{{ url_for('crear_juntada') }}">
+    <form method="POST" action="{{ url_for('crear_agenda') }}">
       <div class="campo">
         <label for="titulo">Título</label>
-        <input type="text" id="titulo" name="titulo" placeholder="¿Qué van a hacer?" required>
+        <input type="text" id="titulo" name="titulo" placeholder="¿Qué tenés que hacer?" required>
       </div>
 
       <div class="campo">
@@ -47,26 +47,7 @@
         </div>
       </div>
 
-      <div class="seccion">
-        <h3 class="titulo-seccion">Invitar amigos</h3>
-        <ul class="lista">
-          {% for amigo in amigos %}
-          <li class="fila">
-            <label class="fila-seleccionable">
-              <input type="checkbox" name="invitados" value="{{ amigo.id }}"{% if amigo.id in seleccionados %} checked{% endif %}>
-              <span class="fila-info">
-                <span class="fila-nombre">{{ amigo.nombre }}</span>
-                <span class="fila-detalle">{{ amigo.email }}</span>
-              </span>
-            </label>
-          </li>
-          {% else %}
-          <li class="fila fila-vacia">Todavía no tenés amigos para invitar</li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <button type="submit" class="boton-enviar">Crear juntada</button>
+      <button type="submit" class="boton-enviar">Guardar evento</button>
     </form>
   </div>
 </div>

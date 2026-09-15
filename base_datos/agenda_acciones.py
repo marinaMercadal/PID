@@ -15,9 +15,11 @@ def guardar(agenda):
         sesion.add(agenda_tabla)
         sesion.commit()
 
-def obtener_por_usuario(usuario_id):
+def obtener_por_usuario(usuario_id, fecha=None, fecha_fin=None):
     with Session() as sesion:
         consulta = select(AgendaTabla).where(
             AgendaTabla.usuario_id == usuario_id
         )
+        if fecha is not None:
+            consulta=consulta.where(AgendaTabla.fecha.between(fecha,fecha_fin or fecha))
         return sesion.scalars(consulta).all()

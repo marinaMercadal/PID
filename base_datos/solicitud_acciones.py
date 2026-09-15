@@ -1,6 +1,7 @@
-from sqlalchemy import select, update
+from sqlalchemy import select, update, case
 from base_datos.configuracion import Session
 from base_datos.solicitud_tabla import SolicitudTabla
+from base_datos.usuario_tabla import UsuarioTabla
 
 
 def guardar(solicitud):
@@ -46,7 +47,8 @@ def actualizarEstado(solicitudID,usuarioID,nuevoEstado):
     
 def obtenerRecibidas(usuarioID):
     with Session() as sesion:
-        consulta=select(SolicitudTabla).where(
+        consulta=select(SolicitudTabla).join(UsuarioTabla,UsuarioTabla.id==SolicitudTabla.emisorID).where(
+            UsuarioTabla.activo.is_(True),
             SolicitudTabla.receptorID==usuarioID,
             SolicitudTabla.estado=="Pendiente"
         )
@@ -54,7 +56,11 @@ def obtenerRecibidas(usuarioID):
 
 def obtener_amigos_de_usuario(usuarioID):
     with Session() as sesion:
-        consulta=select(SolicitudTabla).where(
+        consulta=select(SolicitudTabla).join(UsuarioTabla,UsuarioTabla.id==case(
+            (SolicitudTabla.emisorID==usuarioID,SolicitudTabla.receptorID),
+            else_=SolicitudTabla.emisorID
+        )).where(
+            UsuarioTabla.activo.is_(True),
             SolicitudTabla.estado=="Aceptada",
             (SolicitudTabla.emisorID==usuarioID) | (SolicitudTabla.receptorID==usuarioID)
         )

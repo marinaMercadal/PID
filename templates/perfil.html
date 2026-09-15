@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JuntApp — Mi perfil</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='registro.css') }}">
+</head>
+<body>
+  <div class="pagina">
+    <div class="marca">JuntApp</div>
+    <div class="tarjeta-formulario">
+      <h2>Mi perfil</h2>
+      {% if error %}
+      <p class="mensaje-error" role="alert">{{ error }}</p>
+      {% endif %}
+      {% if guardado %}
+      <p role="status">Guardamos tus cambios.</p>
+      {% endif %}
+      <form method="POST" action="{{ url_for('mostrar_perfil') }}">
+        <input type="hidden" name="token" value="{{ session['perfil_token'] }}">
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" value="{{ nombre }}" autocomplete="name" maxlength="255" required>
+        </div>
+        <button type="submit" class="boton-enviar">Guardar cambios</button>
+      </form>
+      <div class="seccion">
+        <h3 class="titulo-seccion">Dar de baja mi cuenta</h3>
+        <p>Tu cuenta se desactivará y dejarás de aparecer en las búsquedas. Se conservarán tus registros de amistad y juntadas.</p>
+        <form method="POST" action="{{ url_for('baja_cuenta') }}">
+          <input type="hidden" name="token" value="{{ session['perfil_token'] }}">
+          <div class="campo">
+            <label for="password-baja">Contraseña actual</label>
+            <input id="password-baja" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <label><input type="checkbox" name="confirmar" value="si" required> Quiero dar de baja mi cuenta</label>
+          <button type="submit" class="boton-enviar">Dar de baja mi cuenta</button>
+        </form>
+      </div>
+      <p class="aviso-login"><a href="{{ url_for('mostrar_calendario') }}">Volver al calendario</a></p>
+    </div>
+  </div>
+</body>
+</html>

@@ -17,6 +17,10 @@
     <h2>Iniciá sesión</h2>
     <p class="subtitulo">Entrá a tu cuenta para coordinar tus juntadas.</p>
 
+    {% if request.args.get("baja") == "1" %}
+    <p role="status">Tu cuenta fue dada de baja.</p>
+    {% endif %}
+
     {% if error %}
     <p class="mensaje-error">{{ error }}</p>
     {% endif %}

@@ -23,13 +23,14 @@ def buscarPorNombre(nombre):
         return []
     with Session() as sesion:
         consulta=select(UsuarioTabla).where(
-            UsuarioTabla.nombre.contains(nombre,autoescape=True)
+            UsuarioTabla.nombre.contains(nombre,autoescape=True),
+            UsuarioTabla.activo.is_(True)
         )
         return sesion.scalars(consulta).all()
 
 def obtenerTodos():
     with Session() as sesion:
-        consulta=select(UsuarioTabla).order_by(UsuarioTabla.nombre)
+        consulta=select(UsuarioTabla).where(UsuarioTabla.activo.is_(True)).order_by(UsuarioTabla.nombre)
         return sesion.scalars(consulta).all()
 
 def buscarPorID(usuarioID):
@@ -45,8 +46,35 @@ def buscar_por_email(email):
 
 def verificar_login(email, password):
     usuario_tabla = buscar_por_email(email)
-    if usuario_tabla is None:
+    if usuario_tabla is None or not usuario_tabla.activo:
         return None
     if not Usuario.verificar_password(password, usuario_tabla.password):
         return None
     return usuario_tabla
+
+def actualizar_perfil(usuarioID,nombre):
+    nombre=(nombre or "").strip()
+    Usuario.validar_nombre(nombre)
+    if len(nombre)>255:
+        raise ValueError("El nombre debe tener hasta 255 caracteres")
+    with Session() as sesion:
+        usuario=sesion.get(UsuarioTabla,usuarioID)
+        if usuario is None or not usuario.activo:
+            raise ValueError("La cuenta no está activa")
+        usuario.nombre=nombre
+        sesion.commit()
+
+
+def dar_de_baja(usuarioID,password):
+    with Session() as sesion:
+        usuario=sesion.get(UsuarioTabla,usuarioID)
+        if usuario is None or not usuario.activo:
+            raise ValueError("La cuenta no está activa")
+        try:
+            correcta=Usuario.verificar_password(password or "",usuario.password)
+        except ValueError:
+            correcta=False
+        if not correcta:
+            raise ValueError("La contraseña es incorrecta")
+        usuario.activo=False
+        sesion.commit()
