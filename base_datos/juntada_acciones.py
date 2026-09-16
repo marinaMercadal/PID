@@ -1,7 +1,8 @@
-from sqlalchemy import select, update, func, case
+from sqlalchemy import select, update, delete, func, case
 from base_datos.configuracion import Session
 from base_datos.juntada_tabla import JuntadaTabla
 from base_datos.juntada_invitados_tabla import JuntadaInvitadosTabla
+from base_datos.usuario_tabla import UsuarioTabla
 
 
 def guardar(juntada):
@@ -69,14 +70,26 @@ def responder_invitacion(juntada_id, usuario_id, nueva_respuesta):
         )
 
         resultado = sesion.execute(consulta)
+
+        if resultado.rowcount == 1 and nueva_respuesta == "No":
+            _borrar_si_todos_rechazaron(sesion, juntada_id)
+
         sesion.commit()
 
         return resultado.rowcount == 1
 
 
+def _borrar_si_todos_rechazaron(sesion, juntada_id):
+    consulta = select(JuntadaInvitadosTabla.estado).where(JuntadaInvitadosTabla.juntada_id == juntada_id)
+    estados = sesion.scalars(consulta).all()
+
+    if estados and all(estado == "No" for estado in estados):
+        sesion.execute(delete(JuntadaInvitadosTabla).where(JuntadaInvitadosTabla.juntada_id == juntada_id))
+        sesion.execute(delete(JuntadaTabla).where(JuntadaTabla.id == juntada_id))
+
+
 def obtener_organizadas_del_dia(usuario_id, fecha, fecha_fin=None):
     with Session() as sesion:
-        # Contamos todos los invitados juntos, sin una consulta por juntada.
         resumen=(
             select(
                 JuntadaInvitadosTabla.juntada_id,
@@ -95,6 +108,20 @@ def obtener_organizadas_del_dia(usuario_id, fecha, fecha_fin=None):
         )
         return sesion.execute(consulta).all()
 
+
+def obtener_invitados_organizador(usuario_id, fecha, fecha_fin=None):
+    with Session() as sesion:
+        consulta = (
+            select(JuntadaInvitadosTabla.juntada_id, UsuarioTabla.nombre)
+            .join(JuntadaTabla, JuntadaTabla.id == JuntadaInvitadosTabla.juntada_id)
+            .join(UsuarioTabla, UsuarioTabla.id == JuntadaInvitadosTabla.usuario_id)
+            .where(
+                JuntadaTabla.organizador_id == usuario_id,
+                JuntadaTabla.fecha.between(fecha, fecha_fin or fecha)
+            )
+            .order_by(UsuarioTabla.nombre)
+        )
+        return sesion.execute(consulta).all()
 
 def obtener_invitaciones_del_calendario(usuario_id, fecha, fecha_fin=None):
     with Session() as sesion:

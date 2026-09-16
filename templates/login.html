@@ -21,6 +21,10 @@
     <p role="status">Tu cuenta fue dada de baja.</p>
     {% endif %}
 
+    {% if request.args.get("registrado") == "1" %}
+    <p role="status">Cuenta creada con éxito. Iniciá sesión para continuar.</p>
+    {% endif %}
+
     {% if error %}
     <p class="mensaje-error">{{ error }}</p>
     {% endif %}

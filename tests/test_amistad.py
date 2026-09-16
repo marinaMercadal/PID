@@ -113,6 +113,26 @@ def test_no_permite_aceptar_una_solicitud_rechazada():
     assert not gestor.sonAmigos(1,2)
     assert len(gestor.solicitudesRecibidas(2))==0
 
+def test_puede_reenviar_solicitud_despues_de_un_rechazo():
+    gestor=GestorAmistades()
+    primera=gestor.enviarSolicitud(1,2)
+    primera.rechazar(2)
+
+    segunda=gestor.enviarSolicitud(1,2)
+
+    assert segunda is not None
+    assert segunda.estado=="Pendiente"
+    assert len(gestor.solicitudes)==2
+
+def test_no_permite_rechazar_una_solicitud_ya_rechazada():
+    gestor=GestorAmistades()
+    solicitud=gestor.enviarSolicitud(1,2)
+    solicitud.rechazar(2)
+
+    solicitud.rechazar(2)
+
+    assert solicitud.estado=="Rechazada"
+
 def test_recibidas_solo_incluye_solicitudes_del_usuario():
     gestor=GestorAmistades()
     paraUsuario2=gestor.enviarSolicitud(1,2)

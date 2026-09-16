@@ -5,18 +5,16 @@ import calendar as modulo_calendario
 from flask import Flask, request, render_template, session, redirect, url_for
 from dominio.usuario import Usuario
 from dominio.juntada.juntada import Juntada
-from dominio.agenda.agenda import Agenda
 from base_datos.usuario_acciones import guardar, actualizar_perfil, dar_de_baja
 from base_datos.usuario_acciones import buscarPorNombre, verificar_login, buscarPorID, obtenerTodos
 from base_datos.credenciales import SECRET_KEY
 from amistad_acciones import enviarSolicitud, aceptarSolicitud, rechazarSolicitud
 from base_datos.solicitud_acciones import obtenerRecibidas, obtener_amigos_de_usuario
-from base_datos.agenda_acciones import obtener_por_usuario as obtener_agenda_de_usuario
-from base_datos.agenda_acciones import guardar as guardar_agenda
 from base_datos.juntada_acciones import (
     guardar as guardar_juntada,
     obtener_organizadas_del_dia,
     obtener_invitaciones_del_calendario,
+    obtener_invitados_organizador,
     responder_invitacion,
 )
 
@@ -51,14 +49,14 @@ def registro():
         usuario=Usuario(email,password,nombre)
         guardar(usuario)
     except ValueError as error:
-        return str(error), 400
+        return render_template("registro.html", error=str(error), nombre=nombre, email=email), 400
 
-    return "Usuario registrado con éxito", 201
+    return redirect(url_for("mostrar_login", registrado="1"))
 
 
 @app.route("/registro", methods = ["GET"])
 def mostrar_registro():
-    return render_template("registro.html")
+    return render_template("registro.html", error=None, nombre="", email="")
 
 @app.route("/login",methods=["GET"])
 def mostrar_login():
@@ -147,16 +145,15 @@ def mostrar_calendario():
     fin_mes=fecha_seleccionada.replace(day=modulo_calendario.monthrange(fecha_seleccionada.year,fecha_seleccionada.month)[1])
     eventos=[]
 
-    for agenda in obtener_agenda_de_usuario(usuario_id,inicio_mes,fin_mes):
-        eventos.append({
-            "fecha":agenda.fecha,"titulo":agenda.titulo,"hora_inicio":agenda.hora_inicio,"hora_fin":agenda.hora_fin,
-            "detalle":"Personal","puede_responder":False,
-        })
+    invitados_por_juntada={}
+    for juntada_id,nombre_invitado in obtener_invitados_organizador(usuario_id,inicio_mes,fin_mes):
+        invitados_por_juntada.setdefault(juntada_id,[]).append(nombre_invitado)
 
     for juntada,confirmados,total in obtener_organizadas_del_dia(usuario_id,inicio_mes,fin_mes):
+        invitados=", ".join(invitados_por_juntada.get(juntada.id,[]))
         eventos.append({
             "fecha":juntada.fecha,"titulo":juntada.titulo,"hora_inicio":juntada.hora_inicio,"hora_fin":juntada.hora_fin,
-            "detalle":f"Organizás · {confirmados}/{total} confirmaron","puede_responder":False,
+            "detalle":f"Organizás · {confirmados}/{total} confirmaron · Invitados: {invitados}","puede_responder":False,
         })
 
     invitaciones_pendientes=[]
@@ -204,33 +201,6 @@ def mostrar_calendario():
         nombre_mes=NOMBRES_MES[fecha_seleccionada.month],
         dias_semana=DIAS_SEMANA,
     )
-
-@app.route("/agenda/nueva",methods=["GET"])
-@login_requerido
-def mostrar_nueva_agenda():
-    fecha_sugerida=request.args.get("fecha", date.today().isoformat())
-    return render_template("agenda_nueva.html", fecha_sugerida=fecha_sugerida, error=None)
-
-@app.route("/agenda/nueva",methods=["POST"])
-@login_requerido
-def crear_agenda():
-    usuario_id=session["usuarioID"]
-    fecha_parametro=request.form.get("fecha","")
-
-    try:
-        fecha_formateada=datetime.strptime(fecha_parametro, "%Y-%m-%d").strftime("%d/%m/%Y")
-        agenda=Agenda(
-            usuario_id=usuario_id,
-            fecha=fecha_formateada,
-            titulo_reunion=request.form.get("titulo"),
-            hora_inicio=request.form.get("hora_inicio"),
-            hora_fin=request.form.get("hora_fin"),
-        )
-    except ValueError as error:
-        return render_template("agenda_nueva.html", fecha_sugerida=fecha_parametro, error=str(error)), 400
-
-    guardar_agenda(agenda)
-    return redirect(url_for("mostrar_calendario", fecha=fecha_parametro))
 
 @app.route("/juntada/nueva",methods=["GET"])
 @login_requerido

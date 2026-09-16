@@ -1,5 +1,4 @@
-# Solo a modo de prueba - para verificar su funcionamiento cambien el valor de los atributos.
-# Necesitan tener el archivo credenciales.py
+
 from dominio.juntada.juntada import Juntada
 from base_datos.juntada_acciones import guardar, obtener_invitaciones_de_usuario, responder_invitacion
 

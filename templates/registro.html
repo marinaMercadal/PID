@@ -18,15 +18,19 @@
     <h2>Creá tu cuenta</h2>
     <p class="subtitulo">Un minuto y ya podés empezar a coordinar juntadas.</p>
 
+    {% if error %}
+    <p class="mensaje-error">{{ error }}</p>
+    {% endif %}
+
     <form id="form-registro" method="POST" action="/registro">
       <div class="campo">
         <label for="nombre">Nombre</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Cómo te van a ver tus amigos" required>
+        <input type="text" id="nombre" name="nombre" placeholder="Cómo te van a ver tus amigos" value="{{ nombre }}" required>
       </div>
 
       <div class="campo">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="nombre@ejemplo.com" required>
+        <input type="email" id="email" name="email" placeholder="nombre@ejemplo.com" value="{{ email }}" required>
       </div>
 
       <div class="campo">

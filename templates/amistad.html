@@ -16,13 +16,14 @@
   <div class="tarjeta-formulario tarjeta-ancha">
     <div class="encabezado-tarjeta">
       <h2>Mis amistades</h2>
-      <div class="encabezado-acciones">
-        <a href="{{ url_for('mostrar_calendario') }}" class="boton-texto">Calendario</a>
-        <a href="{{ url_for('mostrar_perfil') }}" class="boton-texto">Mi perfil</a>
+      <nav class="nav-principal">
+        <a href="{{ url_for('mostrar_nueva_juntada') }}" class="boton-nav">Nueva juntada</a>
+        <a href="{{ url_for('mostrar_calendario') }}" class="boton-nav">Calendario</a>
+        <a href="{{ url_for('mostrar_perfil') }}" class="boton-nav">Mi perfil</a>
         <form method="POST" action="{{ url_for('logout') }}">
-          <button type="submit" class="boton-texto">Cerrar sesión</button>
+          <button type="submit" class="boton-nav">Cerrar sesión</button>
         </form>
-      </div>
+      </nav>
     </div>
 
     <div data-recargable>

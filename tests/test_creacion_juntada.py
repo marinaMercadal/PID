@@ -22,6 +22,12 @@ def test_datos_hora_inicio_mayor_a_hora_fin_es_invalido():
     assert str(error.value) == "La hora de inicio no puede ser posterior a la hora de finalizacion"
 
 
+def test_datos_hora_inicio_igual_a_hora_fin_es_invalido():
+    with pytest.raises(ValueError) as error:
+        Juntada(2, "15/09/2026", "Juntada", "18:00", "18:00", [1, 3, 5])
+    assert str(error.value) == "La hora de inicio no puede ser posterior a la hora de finalizacion"
+
+
 def test_formato_fecha_invalido():
     with pytest.raises(ValueError) as error:
         Juntada(2, "15-09-2026", "Juntada", "18:00", "21:00", [1, 3, 5])

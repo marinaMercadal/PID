@@ -16,15 +16,14 @@
   <div class="tarjeta-formulario tarjeta-calendario">
     <div class="encabezado-tarjeta">
       <h2>Mi calendario</h2>
-      <div class="encabezado-acciones">
-        <a href="{{ url_for('mostrar_nueva_agenda', fecha=fecha_seleccionada.isoformat()) }}" class="boton-secundario">Nuevo evento</a>
-        <a href="{{ url_for('mostrar_nueva_juntada', fecha=fecha_seleccionada.isoformat()) }}" data-nueva-juntada class="boton-secundario">Nueva juntada</a>
-        <a href="{{ url_for('mostrar_amistad') }}" class="boton-texto">Amistades</a>
-        <a href="{{ url_for('mostrar_perfil') }}" class="boton-texto">Mi perfil</a>
+      <nav class="nav-principal">
+        <a href="{{ url_for('mostrar_nueva_juntada', fecha=fecha_seleccionada.isoformat()) }}" data-nueva-juntada class="boton-nav">Nueva juntada</a>
+        <a href="{{ url_for('mostrar_amistad') }}" class="boton-nav">Amistades</a>
+        <a href="{{ url_for('mostrar_perfil') }}" class="boton-nav">Mi perfil</a>
         <form method="POST" action="{{ url_for('logout') }}">
-          <button type="submit" class="boton-texto">Cerrar sesión</button>
+          <button type="submit" class="boton-nav">Cerrar sesión</button>
         </form>
-      </div>
+      </nav>
     </div>
 
     <div data-recargable data-calendario-fecha="{{ fecha_seleccionada.isoformat() }}">

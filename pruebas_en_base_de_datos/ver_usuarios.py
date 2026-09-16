@@ -1,5 +1,4 @@
-#Solo a modo de prueba- para obtener los valores: id, nombre, email que ya estan cargados en la tabla usuario (UusarioTabla)
-#Necesitan tener el archivo credenciales.py
+
 
 from base_datos.configuracion import Session
 from base_datos.usuario_tabla import UsuarioTabla
