@@ -33,13 +33,6 @@ def obtener_por_id(juntada_id):
     with Session() as sesion:
         return sesion.get(JuntadaTabla, juntada_id)
 
-def obtener_organizadas_por_usuario(usuario_id):
-    with Session() as sesion:
-        consulta = select(JuntadaTabla).where(
-            JuntadaTabla.organizador_id == usuario_id
-        )
-        return sesion.scalars(consulta).all()
-
 def obtener_invitaciones_de_usuario(usuario_id):
     with Session() as sesion:
         consulta = select(JuntadaInvitadosTabla).where(

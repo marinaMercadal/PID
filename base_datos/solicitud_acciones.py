@@ -20,11 +20,6 @@ def obtenerTodas():
         solicitudes=sesion.scalars(consulta).all()
         return solicitudes
 
-def obtenerPorID(solicitudID):
-    with Session() as sesion:
-        solicitud=sesion.get(SolicitudTabla,solicitudID)
-        return solicitud
-
 def actualizarEstado(solicitudID,usuarioID,nuevoEstado):
     if nuevoEstado not in ("Aceptada","Rechazada"):
         return False
