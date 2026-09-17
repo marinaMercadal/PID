@@ -20,6 +20,7 @@ from base_datos.juntada_acciones import (
     obtener_invitados_organizador,
     responder_invitacion,
 )
+from base_datos.disponibilidad_amigo_acciones import obtener_disponibilidad
 
 NOMBRES_MES = [
     "", "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -352,6 +353,22 @@ def rechazar_solicitud(solicitudID):
         return "No se puede rechazar esta solicitud", 400
 
     return redirect(url_for("mostrar_amistad"))
+
+
+@app.route("/disponibilidad/<int:amigo_id>", methods=["GET"])
+@login_requerido
+def mostrar_disponibilidad(amigo_id):
+    usuario_id = session["usuarioID"]
+    fecha_parametro = request.args.get("fecha", date.today().isoformat())
+
+    try:
+        fecha = date.fromisoformat(fecha_parametro)
+        ocupados = obtener_disponibilidad(usuario_id, amigo_id, fecha)  
+    except ValueError as error:
+        return render_template("disponibilidad_amigo.html", error=str(error), amigo=None, ocupados=[], fecha=fecha_parametro), 400
+
+    amigo = buscarPorID(amigo_id)
+    return render_template("disponibilidad_amigo.html", error=None, amigo=amigo, ocupados=ocupados, fecha=fecha_parametro)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)

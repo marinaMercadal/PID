@@ -59,6 +59,7 @@
                 <span class="fila-detalle">{{ amigo.email }}</span>
               </span>
             </label>
+            <a href="{{ url_for('mostrar_disponibilidad', amigo_id=amigo.id, fecha=fecha_sugerida) }}" class="boton-texto">Ver disponibilidad</a>
           </li>
           {% else %}
           <li class="fila fila-vacia">Todavía no tenés amigos para invitar</li>
